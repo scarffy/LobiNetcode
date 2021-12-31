@@ -61,7 +61,7 @@ public class Player : NetworkBehaviour
 
     void valueChanged(int prevI,int newI)
     {
-        Debug.Log(newI);
+        //Debug.Log(newI);
 
         if(IsOwner && IsClient)
         {
@@ -93,18 +93,32 @@ public class Player : NetworkBehaviour
     public void SpawnServerRpc()
     {
         //! Calling from client to server
+
+        //! Object need to turned on
         GameObject go = Instantiate(NetworkController.Instance.hostUI, NetworkController.Instance.canvasParent);
         go.GetComponent<NetworkObject>().Spawn();
+        ulong itemNetId = go.GetComponent<NetworkObject>().NetworkObjectId;
+        //! How to reparent this object?
+        //! Not da wey
+        go.transform.parent = NetworkController.Instance.canvasParent;
 
         CallingClientRpc();
     }
 
+    //[Space]
+    public GameObject[] uiObjects;
+
     [ClientRpc]
     public void CallingClientRpc()
     {
-        //if (!IsServer) return;
+        //! Calling from server to client
+        uiObjects = GameObject.FindGameObjectsWithTag("Finish");
 
-        
+        for (int i = 0; i < uiObjects.Length; i++)
+        {
+            uiObjects[i].transform.parent = NetworkController.Instance.canvasParent;
+        }
+
     }
 }
 
