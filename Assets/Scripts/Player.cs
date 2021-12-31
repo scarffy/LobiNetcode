@@ -6,8 +6,6 @@ using Unity.Collections;
 
 public class Player : NetworkBehaviour
 {
-    //! To try.. Network get NetworkVariable?? then what??
-
     public NetworkVariable<NetworkString> playerName = new NetworkVariable<NetworkString>();
     public NetworkVariable<int> playerRoles = new NetworkVariable<int>(0);
 
