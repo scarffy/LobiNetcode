@@ -96,12 +96,13 @@ public class Player : NetworkBehaviour
 
         //! Object need to turned on
         GameObject go = Instantiate(NetworkController.Instance.hostUI, NetworkController.Instance.canvasParent);
-        go.GetComponent<NetworkObject>().Spawn();
-        ulong itemNetId = go.GetComponent<NetworkObject>().NetworkObjectId;
-        //! How to reparent this object?
-        //! Not da wey
         go.transform.parent = NetworkController.Instance.canvasParent;
 
+        go.GetComponent<NetworkObject>().Spawn();
+        ulong itemNetId = go.GetComponent<NetworkObject>().NetworkObjectId;
+        NetworkObject netObj = go.GetComponent<NetworkObject>();
+
+        //! Not da wey
         CallingClientRpc();
     }
 
@@ -112,14 +113,22 @@ public class Player : NetworkBehaviour
     public void CallingClientRpc()
     {
         //! Calling from server to client
+
+        if (!IsServer) return;
+        //! Even calling from server pon tak boleh... kenapa?
         uiObjects = GameObject.FindGameObjectsWithTag("Finish");
 
         for (int i = 0; i < uiObjects.Length; i++)
         {
-            uiObjects[i].transform.parent = NetworkController.Instance.canvasParent;
+            uiObjects[i].name = "Host UI";
+            //! Cannot call from host because not a server... Which is weird because Host also is a server
+            uiObjects[i].transform.SetParent(null);
+            uiObjects[i].transform.SetParent(NetworkController.Instance.canvasParent);
+            //uiObjects[i].transform.parent = NetworkController.Instance.canvasParent;
         }
-
     }
+
+    // How about do thing non networking way? Cannot.. Not like photon..
 }
 
 public struct NetworkString : INetworkSerializable
