@@ -60,7 +60,7 @@ public class NetworkController : NetworkBehaviour
     /// </summary>
     public void IsConnectedServer()
     {
-        Debug.Log("Connected to server");
+        //Debug.Log("Connected to server");
         UIManager.Instance.connectionStatusEnum = UIManager.StatusEnum.Connected;
         UIManager.Instance.ConnectionStatus();
         isServer = true;
@@ -79,24 +79,6 @@ public class NetworkController : NetworkBehaviour
         }
 
         DebuggerManager.Instance.DebugMsg("Is not server");
-    }
-
-
-    //! Cannot call this from here since this does not have NetworkObject
-    [ServerRpc]
-    public void SpawnServerRpc()
-    {
-        //GameObject go = Instantiate(clientUI, canvasParent);
-        //go.GetComponent<NetworkObject>().Spawn();
-        Debug.Log("Calling from client");
-    }
-
-    //! Cannot call this from here since this does not have NetworkObject
-    [ClientRpc]
-    public void SpawnClientRpc()
-    {
-        //GameObject go = Instantiate(clientUI, canvasParent);
-        //go.GetComponent<NetworkObject>().Spawn();
-        Debug.Log("Calling from server");
+        NetworkLog.LogInfoServer($"Client {value} has connected");
     }
 }
