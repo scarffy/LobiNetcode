@@ -504,6 +504,11 @@ MonoBehaviour:
       SourcePrefabToOverride: {fileID: 0}
       SourceHashToOverride: 0
       OverridingTargetPrefab: {fileID: 0}
+    - Override: 0
+      Prefab: {fileID: 1835636585}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0
@@ -569,6 +574,7 @@ MonoBehaviour:
   unetTransport: {fileID: 462891801}
   isServer: 0
   canvasParent: {fileID: 960433500}
+  dummyParent: {fileID: 1835636586}
   hostUI: {fileID: 1845441523798717689, guid: b82fb1b2246d04a2abf98f95fb02ad0a, type: 3}
   clientUI: {fileID: 412593349381038569, guid: 1774b9403b40d425e97e60387f06df61, type: 3}
 --- !u!1 &497500148
@@ -1529,6 +1535,7 @@ GameObject:
   - component: {fileID: 960433501}
   - component: {fileID: 960433503}
   - component: {fileID: 960433504}
+  - component: {fileID: 960433505}
   m_Layer: 0
   m_Name: Panel - All Clients
   m_TagString: Untagged
@@ -1637,6 +1644,33 @@ MonoBehaviour:
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &960433505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 960433499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  InLocalSpace: 0
+  Interpolate: 1
+  CanCommitToTransform: 0
 --- !u!1 &1104363125
 GameObject:
   m_ObjectHideFlags: 0
@@ -2354,6 +2388,7 @@ GameObject:
   - component: {fileID: 1835636589}
   - component: {fileID: 1835636588}
   - component: {fileID: 1835636587}
+  - component: {fileID: 1835636590}
   m_Layer: 0
   m_Name: Canvas Connected
   m_TagString: Untagged
@@ -2444,6 +2479,22 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1835636590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1835636585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 642499354
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &1878679598
 GameObject:
   m_ObjectHideFlags: 0

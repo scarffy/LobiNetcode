@@ -51,6 +51,7 @@ public class Player : NetworkBehaviour
         }
     }
 
+    #region NetworkVariableLogics
     private void Update()
     {
         if (Input.GetKeyUp(KeyCode.K) && IsLocalPlayer)
@@ -88,6 +89,7 @@ public class Player : NetworkBehaviour
         //go.GetComponent<NetworkObject>().Spawn();
         UpdateRoleValue();
     }
+    #endregion
 
     [ServerRpc(RequireOwnership = false)]
     public void SpawnServerRpc()
@@ -95,14 +97,19 @@ public class Player : NetworkBehaviour
         //! Calling from client to server
 
         //! Object need to turned on
-        GameObject go = Instantiate(NetworkController.Instance.hostUI, NetworkController.Instance.canvasParent);
-        go.transform.parent = NetworkController.Instance.canvasParent;
+        GameObject go = Instantiate(
+            NetworkController.Instance.hostUI,
+            NetworkController.Instance.canvasParent
+            );
+        //go.transform.parent = NetworkController.Instance.canvasParent;
 
         go.GetComponent<NetworkObject>().Spawn();
-        ulong itemNetId = go.GetComponent<NetworkObject>().NetworkObjectId;
-        NetworkObject netObj = go.GetComponent<NetworkObject>();
 
-        //! Not da wey
+        //ulong itemNetId = go.GetComponent<NetworkObject>().NetworkObjectId;
+        //NetworkObject netObj = go.GetComponent<NetworkObject>();
+
+        //! This is da wey
+        if (!IsServer) return;
         CallingClientRpc();
     }
 
@@ -115,16 +122,17 @@ public class Player : NetworkBehaviour
         //! Calling from server to client
 
         if (!IsServer) return;
-        //! Even calling from server pon tak boleh... kenapa?
+
+        //! Tukar 
         uiObjects = GameObject.FindGameObjectsWithTag("Finish");
 
         for (int i = 0; i < uiObjects.Length; i++)
         {
-            uiObjects[i].name = "Host UI";
-            //! Cannot call from host because not a server... Which is weird because Host also is a server
-            uiObjects[i].transform.SetParent(null);
+            //uiObjects[i].name = "Host UI";
+
+            uiObjects[i].transform.SetParent(NetworkController.Instance.dummyParent);
             uiObjects[i].transform.SetParent(NetworkController.Instance.canvasParent);
-            //uiObjects[i].transform.parent = NetworkController.Instance.canvasParent;
+            
         }
     }
 

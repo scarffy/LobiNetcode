@@ -18,6 +18,7 @@ public class NetworkController : NetworkBehaviour
 
     [Header("Object to spawn")]
     public Transform canvasParent;
+    public Transform dummyParent;
     public GameObject hostUI;
     public GameObject clientUI;
 
