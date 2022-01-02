@@ -12,8 +12,8 @@ public class ClientUI : NetworkBehaviour
     public TMP_Dropdown roleDropdown;
 
     [Space]
-    public Player player;     // To relay back to the player of their role
-    [SerializeField] NetworkObject netObject;
+    public Player player;   // To relay back to the player of their role
+    //[SerializeField] NetworkObject netObject;   // No idea what to do with this yet
 
     public override void OnNetworkSpawn()
     {
@@ -21,7 +21,7 @@ public class ClientUI : NetworkBehaviour
         {
             roleDropdown.gameObject.SetActive(false);
         }
-        netObject = GetComponent<NetworkObject>();
+        //netObject = GetComponent<NetworkObject>();
 
 
         roleName.text = "None";
@@ -31,13 +31,18 @@ public class ClientUI : NetworkBehaviour
     /// Calling from client to server
     /// </summary>
     [ServerRpc]
-    public void SetupServerRpc(string value)
+    public void SetupServerRpc(ulong value)
     {
         //! Calling from client to server
 
-        clientName.text = $"{value}";
+        clientName.text = $"Player {value}";
         SetupClientRpc(clientName.text);
 
+        NetworkObject networkObject;
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(value, out networkObject))
+        {
+            player = networkObject.GetComponent<Player>();
+        }
     }
 
     /// <summary>
@@ -48,6 +53,8 @@ public class ClientUI : NetworkBehaviour
     {
         //! Calling from server to client
         clientName.text = value;
+
+        
     }
 
     /// <summary>

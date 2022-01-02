@@ -115,7 +115,7 @@ public class Player : NetworkBehaviour
 
         go.GetComponent<NetworkObject>().Spawn();
         //! How do I call this from the host+server at start?
-        go.GetComponent<ClientUI>().SetupServerRpc(playerName.Value);
+        go.GetComponent<ClientUI>().SetupServerRpc(OwnerClientId);
         go.GetComponent<ClientUI>().player = this;
 
         //! This is da wey
