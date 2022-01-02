@@ -13,7 +13,6 @@ public class ClientUI : NetworkBehaviour
 
     [Space]
     public Player player;   // To relay back to the player of their role
-    //[SerializeField] NetworkObject netObject;   // No idea what to do with this yet
 
     public override void OnNetworkSpawn()
     {
@@ -21,8 +20,6 @@ public class ClientUI : NetworkBehaviour
         {
             roleDropdown.gameObject.SetActive(false);
         }
-        //netObject = GetComponent<NetworkObject>();
-
 
         roleName.text = "None";
     }
@@ -33,14 +30,14 @@ public class ClientUI : NetworkBehaviour
     [ServerRpc]
     public void SetupServerRpc(ulong value)
     {
-        //! Calling from client to server
-
         clientName.text = $"Player {value}";
-        SetupClientRpc(clientName.text);
+        SetupClientRpc(value);
 
         NetworkObject networkObject;
         if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(value, out networkObject))
         {
+            //! This is missing in client thus not able to call rpc properly (fixed)
+            //! Still missing in host object
             player = networkObject.GetComponent<Player>();
         }
     }
@@ -49,28 +46,37 @@ public class ClientUI : NetworkBehaviour
     /// Calling from server to client
     /// </summary>
     [ClientRpc]
-    public void SetupClientRpc(string value)
+    public void SetupClientRpc(ulong value)
     {
-        //! Calling from server to client
-        clientName.text = value;
+        clientName.text = $"Player {value}";
 
-        
+        NetworkObject networkObject;
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(value, out networkObject))
+        {
+            //! This is missing in client thus not able to call rpc properly
+            player = networkObject.GetComponent<Player>();
+        }
     }
 
     /// <summary>
-    /// Calling from server to client
+    /// Calling from server to client.
+    /// This is called from dropdown menu
     /// </summary>
     /// <param name="value"></param>
     [ClientRpc]
     public void SetupRoleClientRpc(int value)
     {
+        //! Only server can call this
+        //! This function only work will existing player. Not player who join later
+        player.UpdateRoleValue(value);
+
         switch (value)
         {
             case 0:
                 roleName.text = "None";
                 break;
             case 1:
-                roleName.text = "Trainer";
+                roleName.text = "Trainer";             
                 break;
             case 2:
                 roleName.text = "Trainee";

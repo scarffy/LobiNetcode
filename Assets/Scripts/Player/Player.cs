@@ -25,11 +25,6 @@ public class Player : NetworkBehaviour
             if (IsOwner && IsClient)
             {
                 gameObject.name = $"Local player {OwnerClientId}";
-                //NetworkController.Instance.SpawnClientRpc();
-                //CallingServerRpc();
-                //LobbyManager.Instance.CallingClientRpc();
-                //LobbyManager.Instance.CallingServerRpc();
-                //Debug.Log("OnNetworkSpawn isOwner and isClient");
             }
         }
         else
@@ -45,16 +40,13 @@ public class Player : NetworkBehaviour
         }
 
 
-        //playerRoles.OnValueChanged += valueChanged;
+        playerRoles.OnValueChanged += valueChanged;
 
         if (IsLocalPlayer)
         {
             Debug.Log("OnNetworkSpawn isLocalPlayer");
             SpawnServerRpc();
         }
-
-        if(IsServer)
-            CallingClientRpc();
     }
 
     #region NetworkVariableLogics
@@ -73,6 +65,9 @@ public class Player : NetworkBehaviour
         if(IsOwner && IsClient)
         {
             // Update UI code
+            //! To do
+            //! Transfer from line 69 to 82 in ClientUI.cs and see what it does.
+            //! If it doesn't work then put it in UpdateRoleValue function
         }
     }
 
@@ -101,6 +96,7 @@ public class Player : NetworkBehaviour
     }
     #endregion
 
+    #region SetupPlayerObject
     [ServerRpc(RequireOwnership = false)]
     public void SpawnServerRpc()
     {
@@ -142,6 +138,7 @@ public class Player : NetworkBehaviour
             
         }
     }
+    #endregion
 }
 
 public struct NetworkString : INetworkSerializable
