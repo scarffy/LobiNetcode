@@ -9,6 +9,9 @@ public class Player : NetworkBehaviour
     public NetworkVariable<NetworkString> playerName = new NetworkVariable<NetworkString>();
     public NetworkVariable<int> playerRoles = new NetworkVariable<int>(0);
 
+    [Space]
+    public GameObject[] uiObjects;
+
     /// <summary>
     /// This get called everytime
     /// </summary>
@@ -42,13 +45,16 @@ public class Player : NetworkBehaviour
         }
 
 
-        playerRoles.OnValueChanged += valueChanged;
+        //playerRoles.OnValueChanged += valueChanged;
 
         if (IsLocalPlayer)
         {
             Debug.Log("OnNetworkSpawn isLocalPlayer");
             SpawnServerRpc();
         }
+
+        if(IsServer)
+            CallingClientRpc();
     }
 
     #region NetworkVariableLogics
@@ -56,7 +62,7 @@ public class Player : NetworkBehaviour
     {
         if (Input.GetKeyUp(KeyCode.K) && IsLocalPlayer)
         {
-            playerRoles.Value++;
+            //playerRoles.Value++;
         }
     }
 
@@ -70,6 +76,10 @@ public class Player : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// UI Button can call this to debug. Default reset value is 0
+    /// </summary>
+    /// <param name="value"></param>
     public void UpdateRoleValue(int value = 1)
     {
         if (!IsServer) return;
@@ -98,23 +108,20 @@ public class Player : NetworkBehaviour
 
         //! Object need to turned on
         GameObject go = Instantiate(
-            NetworkController.Instance.hostUI,
+            NetworkController.Instance.clientUI,
             NetworkController.Instance.canvasParent
             );
         //go.transform.parent = NetworkController.Instance.canvasParent;
 
         go.GetComponent<NetworkObject>().Spawn();
-
-        //ulong itemNetId = go.GetComponent<NetworkObject>().NetworkObjectId;
-        //NetworkObject netObj = go.GetComponent<NetworkObject>();
+        //! How do I call this from the host+server at start?
+        go.GetComponent<ClientUI>().SetupServerRpc(playerName.Value);
+        go.GetComponent<ClientUI>().player = this;
 
         //! This is da wey
         if (!IsServer) return;
         CallingClientRpc();
     }
-
-    //[Space]
-    public GameObject[] uiObjects;
 
     [ClientRpc]
     public void CallingClientRpc()
@@ -123,7 +130,7 @@ public class Player : NetworkBehaviour
 
         if (!IsServer) return;
 
-        //! Tukar 
+        //! Tukar mak ayah
         uiObjects = GameObject.FindGameObjectsWithTag("Finish");
 
         for (int i = 0; i < uiObjects.Length; i++)
@@ -135,8 +142,6 @@ public class Player : NetworkBehaviour
             
         }
     }
-
-    // How about do thing non networking way? Cannot.. Not like photon..
 }
 
 public struct NetworkString : INetworkSerializable
