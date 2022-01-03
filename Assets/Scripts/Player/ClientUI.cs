@@ -12,7 +12,7 @@ public class ClientUI : NetworkBehaviour
     public TMP_Dropdown roleDropdown;
 
     [Space]
-    public Player player;   // To relay back to the player of their role
+    public Player player;   // To relay back to the player of their role //! Missing host
 
     public override void OnNetworkSpawn()
     {
