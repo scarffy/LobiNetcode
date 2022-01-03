@@ -9,6 +9,9 @@ public class Player : NetworkBehaviour
     public NetworkVariable<NetworkString> playerName = new NetworkVariable<NetworkString>();
     public NetworkVariable<int> playerRoles = new NetworkVariable<int>(0);
 
+    [Space]
+    public GameObject[] uiObjects;
+
     /// <summary>
     /// This get called everytime
     /// </summary>
@@ -22,11 +25,6 @@ public class Player : NetworkBehaviour
             if (IsOwner && IsClient)
             {
                 gameObject.name = $"Local player {OwnerClientId}";
-                //NetworkController.Instance.SpawnClientRpc();
-                //CallingServerRpc();
-                //LobbyManager.Instance.CallingClientRpc();
-                //LobbyManager.Instance.CallingServerRpc();
-                //Debug.Log("OnNetworkSpawn isOwner and isClient");
             }
         }
         else
@@ -51,24 +49,32 @@ public class Player : NetworkBehaviour
         }
     }
 
+    #region NetworkVariableLogics
     private void Update()
     {
         if (Input.GetKeyUp(KeyCode.K) && IsLocalPlayer)
         {
-            playerRoles.Value++;
+            //playerRoles.Value++;
         }
     }
 
     void valueChanged(int prevI,int newI)
     {
-        Debug.Log(newI);
+        //Debug.Log(newI);
 
         if(IsOwner && IsClient)
         {
             // Update UI code
+            //! To do
+            //! Transfer from line 69 to 82 in ClientUI.cs and see what it does.
+            //! If it doesn't work then put it in UpdateRoleValue function
         }
     }
 
+    /// <summary>
+    /// UI Button can call this to debug. Default reset value is 0
+    /// </summary>
+    /// <param name="value"></param>
     public void UpdateRoleValue(int value = 1)
     {
         if (!IsServer) return;
@@ -88,24 +94,51 @@ public class Player : NetworkBehaviour
         //go.GetComponent<NetworkObject>().Spawn();
         UpdateRoleValue();
     }
+    #endregion
 
+    #region SetupPlayerObject
     [ServerRpc(RequireOwnership = false)]
     public void SpawnServerRpc()
     {
         //! Calling from client to server
-        GameObject go = Instantiate(NetworkController.Instance.hostUI, NetworkController.Instance.canvasParent);
-        go.GetComponent<NetworkObject>().Spawn();
 
+        //! Object need to turned on
+        GameObject go = Instantiate(
+            NetworkController.Instance.clientUI,
+            NetworkController.Instance.canvasParent
+            );
+        //go.transform.parent = NetworkController.Instance.canvasParent;
+
+        go.GetComponent<NetworkObject>().Spawn();
+        //! How do I call this from the host+server at start?
+        go.GetComponent<ClientUI>().SetupServerRpc(OwnerClientId);
+        go.GetComponent<ClientUI>().player = this;
+
+        //! This is da wey
+        if (!IsServer) return;
         CallingClientRpc();
     }
 
     [ClientRpc]
     public void CallingClientRpc()
     {
-        //if (!IsServer) return;
+        //! Calling from server to client
 
-        
+        if (!IsServer) return;
+
+        //! Tukar mak ayah
+        uiObjects = GameObject.FindGameObjectsWithTag("Finish");
+
+        for (int i = 0; i < uiObjects.Length; i++)
+        {
+            //uiObjects[i].name = "Host UI";
+
+            uiObjects[i].transform.SetParent(NetworkController.Instance.dummyParent);
+            uiObjects[i].transform.SetParent(NetworkController.Instance.canvasParent);
+            
+        }
     }
+    #endregion
 }
 
 public struct NetworkString : INetworkSerializable
