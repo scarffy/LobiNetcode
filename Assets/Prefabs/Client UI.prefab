@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: -7223565930881215213}
   m_Layer: 0
   m_Name: Client UI
-  m_TagString: Untagged
+  m_TagString: Finish
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -305,6 +305,7 @@ MonoBehaviour:
   clientName: {fileID: 412593349381038583}
   roleName: {fileID: 412593349201396689}
   roleDropdown: {fileID: 412593349471116844}
+  player: {fileID: 0}
 --- !u!1 &412593349471116846
 GameObject:
   m_ObjectHideFlags: 0

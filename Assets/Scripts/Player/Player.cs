@@ -112,6 +112,7 @@ public class Player : NetworkBehaviour
         go.GetComponent<NetworkObject>().Spawn();
         //! How do I call this from the host+server at start?
         go.GetComponent<ClientUI>().SetupServerRpc(OwnerClientId);
+        //! This work for local but not for remote
         go.GetComponent<ClientUI>().player = this;
 
         //! This is da wey
@@ -119,14 +120,15 @@ public class Player : NetworkBehaviour
         CallingClientRpc();
     }
 
+    /// <summary>
+    /// Calling from server to client
+    /// </summary>
     [ClientRpc]
     public void CallingClientRpc()
     {
-        //! Calling from server to client
-
         if (!IsServer) return;
 
-        //! Tukar mak ayah
+        //! If client doesn't sync properly, it might be tag is not set correctly
         uiObjects = GameObject.FindGameObjectsWithTag("Finish");
 
         for (int i = 0; i < uiObjects.Length; i++)

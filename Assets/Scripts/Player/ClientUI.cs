@@ -31,7 +31,6 @@ public class ClientUI : NetworkBehaviour
     public void SetupServerRpc(ulong value)
     {
         clientName.text = $"Player {value}";
-        SetupClientRpc(value);
 
         NetworkObject networkObject;
         if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(value, out networkObject))
@@ -39,7 +38,9 @@ public class ClientUI : NetworkBehaviour
             //! This is missing in client thus not able to call rpc properly (fixed)
             //! Still missing in host object
             player = networkObject.GetComponent<Player>();
+            Debug.Log($"Have found {value} value");
         }
+        SetupClientRpc(value);
     }
 
     /// <summary>
