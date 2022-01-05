@@ -36,9 +36,9 @@ public class ClientUI : NetworkBehaviour
         if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(value, out networkObject))
         {
             //! This is missing in client thus not able to call rpc properly (fixed)
-            //! Still missing in host object
+            //! Still missing in host object || remote still doesn't work
             player = networkObject.GetComponent<Player>();
-            Debug.Log($"Have found {value} value");
+            Debug.Log($"Host have found {value} value");
         }
         SetupClientRpc(value);
     }
@@ -56,6 +56,7 @@ public class ClientUI : NetworkBehaviour
         {
             //! This is missing in client thus not able to call rpc properly
             player = networkObject.GetComponent<Player>();
+            Debug.Log($"Client have found {value} value");
         }
     }
 
@@ -69,7 +70,10 @@ public class ClientUI : NetworkBehaviour
     {
         //! Only server can call this
         //! This function only work will existing player. Not player who join later
-        player.UpdateRoleValue(value);
+        if(player != null)
+            player.UpdateRoleValue(value);
+        else
+            Debug.Log("player is null");
 
         switch (value)
         {

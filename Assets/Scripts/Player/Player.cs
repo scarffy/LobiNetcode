@@ -10,6 +10,7 @@ public class Player : NetworkBehaviour
     public NetworkVariable<int> playerRoles = new NetworkVariable<int>(0);
 
     [Space]
+    public GameObject go;
     public GameObject[] uiObjects;
 
     /// <summary>
@@ -46,6 +47,9 @@ public class Player : NetworkBehaviour
         {
             Debug.Log("OnNetworkSpawn isLocalPlayer");
             SpawnServerRpc();
+        }
+        else if(!isLocalPlayer && IsServer){
+
         }
     }
 
@@ -85,6 +89,7 @@ public class Player : NetworkBehaviour
             playerRoles.Value = value;
     }
 
+    //! Calling from client to server
     [ServerRpc]
     public void CallingServerRpc()
     {
@@ -103,17 +108,20 @@ public class Player : NetworkBehaviour
         //! Calling from client to server
 
         //! Object need to turned on
-        GameObject go = Instantiate(
+        go = Instantiate(
             NetworkController.Instance.clientUI,
             NetworkController.Instance.canvasParent
             );
         //go.transform.parent = NetworkController.Instance.canvasParent;
-
-        go.GetComponent<NetworkObject>().Spawn();
+        NetworkObject netObject;
+        netObject = go.GetComponent<NetworkObject>();
+        netObject.Spawn();
+        ClientUI clientUI = go.GetComponent<ClientUI>();
         //! How do I call this from the host+server at start?
-        go.GetComponent<ClientUI>().SetupServerRpc(OwnerClientId);
+        clientUI.SetupServerRpc(OwnerClientId);
         //! This work for local but not for remote
-        go.GetComponent<ClientUI>().player = this;
+        clientUI.player = this;
+        
 
         //! This is da wey
         if (!IsServer) return;
@@ -138,6 +146,7 @@ public class Player : NetworkBehaviour
             uiObjects[i].transform.SetParent(NetworkController.Instance.dummyParent);
             uiObjects[i].transform.SetParent(NetworkController.Instance.canvasParent);
             
+            //! try to get owner client id from here
         }
     }
     #endregion

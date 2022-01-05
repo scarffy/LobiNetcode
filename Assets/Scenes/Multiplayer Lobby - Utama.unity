@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748171, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657815, g: 0.49641192, b: 0.57481617, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -570,7 +570,6 @@ MonoBehaviour:
   isServer: 0
   canvasParent: {fileID: 960433500}
   dummyParent: {fileID: 1835636586}
-  hostUI: {fileID: 1845441523798717689, guid: b82fb1b2246d04a2abf98f95fb02ad0a, type: 3}
   clientUI: {fileID: 412593349381038569, guid: 1774b9403b40d425e97e60387f06df61, type: 3}
 --- !u!1 &497500148
 GameObject:
@@ -1156,7 +1155,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 127.0.0.1
+  m_text: 192.168.0.4
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
