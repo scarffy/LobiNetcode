@@ -43,6 +43,10 @@ public class NetworkController : NetworkBehaviour
         
     }
 
+    public void ChangeIpAddress(string value){
+        ipAddress = value;
+    }
+
     public void HostSession()
     {
         unetTransport.ConnectAddress = ipAddress;
