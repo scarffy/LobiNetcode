@@ -147,7 +147,7 @@ public class Player : NetworkBehaviour
         if (IsLocalPlayer)
             go.name = "Local UI";
         else
-            go.name = $"Client UI {OwnerClientId}";
+            go.name = $"Client UI_{OwnerClientId}";
         
         netObject = go.GetComponent<NetworkObject>();
         netObject.Spawn();
