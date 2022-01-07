@@ -19,7 +19,6 @@ public class NetworkController : NetworkBehaviour
     [Header("Object to spawn")]
     public Transform canvasParent;
     public Transform dummyParent;
-    public GameObject hostUI;
     public GameObject clientUI;
 
     // Start is called before the first frame update
@@ -42,6 +41,10 @@ public class NetworkController : NetworkBehaviour
     void Update()
     {
         
+    }
+
+    public void ChangeIpAddress(string value){
+        ipAddress = value;
     }
 
     public void HostSession()

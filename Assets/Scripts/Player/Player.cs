@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using Unity.Collections;
+using TMPro;
 
 public class Player : NetworkBehaviour
 {
@@ -10,7 +11,12 @@ public class Player : NetworkBehaviour
     public NetworkVariable<int> playerRoles = new NetworkVariable<int>(0);
 
     [Space]
+    public GameObject go;
     public GameObject[] uiObjects;
+
+    [Space]
+    public ClientUI clientUI;
+    public NetworkObject netObject;
 
     /// <summary>
     /// This get called everytime
@@ -47,6 +53,9 @@ public class Player : NetworkBehaviour
             Debug.Log("OnNetworkSpawn isLocalPlayer");
             SpawnServerRpc();
         }
+        else if(!IsLocalPlayer && IsServer){
+            Debug.Log("OnNetworkSpawn !IsLocalPlayer");
+        }
     }
 
     #region NetworkVariableLogics
@@ -58,6 +67,8 @@ public class Player : NetworkBehaviour
         }
     }
 
+    public TextMeshProUGUI roleName;
+
     void valueChanged(int prevI,int newI)
     {
         //Debug.Log(newI);
@@ -68,6 +79,27 @@ public class Player : NetworkBehaviour
             //! To do
             //! Transfer from line 69 to 82 in ClientUI.cs and see what it does.
             //! If it doesn't work then put it in UpdateRoleValue function
+            if (roleName == null)
+                roleName = GameObject.Find("Something").GetComponent<TextMeshProUGUI>();
+
+
+            Debug.Log($"Setup Role {newI}");
+
+            switch (newI)
+            {
+                case 0:
+                    roleName.text = "None";
+                    break;
+                case 1:
+                    roleName.text = "Trainer";
+                    break;
+                case 2:
+                    roleName.text = "Trainee";
+                    break;
+                case 3:
+                    roleName.text = "Observer";
+                    break;
+            }
         }
     }
 
@@ -79,12 +111,14 @@ public class Player : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        if (value != 0)
-            playerRoles.Value++;
-        else
-            playerRoles.Value = value;
+        //if (value != 0)
+        //    playerRoles.Value++;
+        //else
+        //    playerRoles.Value = value;
+        playerRoles.Value = value;
     }
 
+    //! Calling from client to server
     [ServerRpc]
     public void CallingServerRpc()
     {
@@ -97,46 +131,78 @@ public class Player : NetworkBehaviour
     #endregion
 
     #region SetupPlayerObject
+    /// <summary>
+    /// Calling from client to server
+    /// </summary>
     [ServerRpc(RequireOwnership = false)]
     public void SpawnServerRpc()
     {
-        //! Calling from client to server
-
         //! Object need to turned on
-        GameObject go = Instantiate(
+        go = Instantiate(
             NetworkController.Instance.clientUI,
             NetworkController.Instance.canvasParent
             );
-        //go.transform.parent = NetworkController.Instance.canvasParent;
 
-        go.GetComponent<NetworkObject>().Spawn();
+        //go.name = "Local UI clone";
+        if (IsLocalPlayer)
+            go.name = "Local UI";
+        else
+            go.name = $"Client UI_{OwnerClientId}";
+        
+        netObject = go.GetComponent<NetworkObject>();
+        netObject.Spawn();
+
+        clientUI = go.GetComponent<ClientUI>();
+        roleName = clientUI.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        if(IsLocalPlayer)
+            roleName.gameObject.name = "Local UI";
+
         //! How do I call this from the host+server at start?
-        go.GetComponent<ClientUI>().SetupServerRpc(OwnerClientId);
-        go.GetComponent<ClientUI>().player = this;
+        clientUI.SetupServerRpc(OwnerClientId);
+        //! This work for local but not for remote
+
+        clientUI.TestServerRpc(go);
+        clientUI.TestGiveServerRpc(gameObject);
 
         //! This is da wey
-        if (!IsServer) return;
+        //if (!IsServer) return;
         CallingClientRpc();
+
+        SpawnedClientRpc(go);
     }
 
+    /// <summary>
+    /// Calling from server to client
+    /// </summary>
+    /// <param name="target"></param>
+    [ClientRpc]
+    public void SpawnedClientRpc(NetworkObjectReference target)
+    {
+        go = target;
+        clientUI = go.GetComponent<ClientUI>();
+        roleName = clientUI.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        if (IsLocalPlayer)
+            roleName.gameObject.name = "Local UI";
+    }
+
+    /// <summary>
+    /// Calling from server to client
+    /// </summary>
     [ClientRpc]
     public void CallingClientRpc()
     {
-        //! Calling from server to client
+        //if (!IsServer) return;
 
-        if (!IsServer) return;
-
-        //! Tukar mak ayah
+        //! If client doesn't sync properly, it might be tag is not set correctly
         uiObjects = GameObject.FindGameObjectsWithTag("Finish");
 
         for (int i = 0; i < uiObjects.Length; i++)
         {
-            //uiObjects[i].name = "Host UI";
-
             uiObjects[i].transform.SetParent(NetworkController.Instance.dummyParent);
             uiObjects[i].transform.SetParent(NetworkController.Instance.canvasParent);
-            
         }
+
+
     }
     #endregion
 }
