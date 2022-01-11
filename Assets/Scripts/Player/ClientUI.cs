@@ -29,6 +29,7 @@ public class ClientUI : NetworkBehaviour
 
     }
 
+    public NetworkVariable<ulong> playerId = new NetworkVariable<ulong>();
 
     /// <summary>
     /// Calling from client to server
@@ -36,6 +37,7 @@ public class ClientUI : NetworkBehaviour
     [ServerRpc]
     public void SetupServerRpc(ulong value)
     {
+        playerId.Value = value;
         clientName.text = $"Player {value}";
         theValue = value;
         SetupClientRpc(value);
@@ -52,13 +54,13 @@ public class ClientUI : NetworkBehaviour
 
         //! Only accessible on server
         //networkObject = NetworkManager.Singleton.ConnectedClients[theValue].PlayerObject;
-        //player = networkObject.GetComponent<Player>();
-        
+        //player = networkObject.GetComponent<Player>(); 
     }
 
     [ServerRpc]
     public void TestServerRpc(NetworkObjectReference target)
     {
+        
         TryClientRpc(target);
     }
 
@@ -119,6 +121,7 @@ public class ClientUI : NetworkBehaviour
 
     }
 
+    public Player[] players;
     /// <summary>
     /// Calling from server to client.
     /// This is called from dropdown menu
@@ -129,10 +132,33 @@ public class ClientUI : NetworkBehaviour
     {
         //! Only server can call this
         //! This function only work will existing player. Not player who join later
-        if(player != null)
+        if (player != null)
             player.UpdateRoleValue(value);
         else
+        {
+           
+            players = GameObject.FindObjectsOfType<Player>();
+
+            for (int i = 0; i < players.Length; i++)
+            {
+                Debug.Log($"Searching netId {players[i].NetworkObject.NetworkObjectId} ,{playerId.Value}");
+                if (players[i].OwnerClientId == playerId.Value)
+                {
+                    player = players[i];
+                    player.UpdateRoleValue(value);
+                    netObj = player.GetComponent<Player>().NetworkObject;
+                   
+                    player.clientUI = this;
+                    player.netObject = this.GetComponent<NetworkObject>();
+                    player.roleName = roleName;
+                   
+                    player.UpdateRoleValue(value);
+                    return;
+                }
+            }
+            //! Find the player with same id
             Debug.Log("player is null");
+        }
 
         //! Later player can't receive value
         //switch (value)
