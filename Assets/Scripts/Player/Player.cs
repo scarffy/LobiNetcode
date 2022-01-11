@@ -73,15 +73,12 @@ public class Player : NetworkBehaviour
     {
         //Debug.Log(newI);
 
-        if(IsOwner && IsClient)
-        {
+        //if(IsOwner && IsClient)
+        //{
             // Update UI code
             //! To do
             //! Transfer from line 69 to 82 in ClientUI.cs and see what it does.
             //! If it doesn't work then put it in UpdateRoleValue function
-            if (roleName == null)
-                roleName = GameObject.Find("Something").GetComponent<TextMeshProUGUI>();
-
 
             Debug.Log($"Setup Role {newI}");
 
@@ -99,7 +96,7 @@ public class Player : NetworkBehaviour
                 case 3:
                     roleName.text = "Observer";
                     break;
-            }
+            //}
         }
     }
 
@@ -169,7 +166,10 @@ public class Player : NetworkBehaviour
         CallingClientRpc();
 
         SpawnedClientRpc(go);
+        obj.Value = go.GetComponent<NetworkObject>().NetworkObjectId;
     }
+
+    public NetworkVariable<ulong> obj = new NetworkVariable<ulong>();
 
     /// <summary>
     /// Calling from server to client
@@ -178,11 +178,15 @@ public class Player : NetworkBehaviour
     [ClientRpc]
     public void SpawnedClientRpc(NetworkObjectReference target)
     {
+        //obj.Value = target.NetworkObjectId;
+  
         go = target;
         clientUI = go.GetComponent<ClientUI>();
         roleName = clientUI.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         if (IsLocalPlayer)
             roleName.gameObject.name = "Local UI";
+        else
+            roleName.gameObject.name = "Remote UI";
     }
 
     /// <summary>
@@ -201,8 +205,6 @@ public class Player : NetworkBehaviour
             uiObjects[i].transform.SetParent(NetworkController.Instance.dummyParent);
             uiObjects[i].transform.SetParent(NetworkController.Instance.canvasParent);
         }
-
-
     }
     #endregion
 }
