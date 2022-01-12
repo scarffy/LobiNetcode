@@ -43,12 +43,9 @@ public class Player : NetworkBehaviour
 
             if (IsOwner && IsLocalPlayer)
             {
-                gameObject.name = $"Local player {OwnerClientId}";
-                //NetworkController.Instance.SpawnServerRpc();
-                
+                gameObject.name = $"Local player {OwnerClientId}";               
             }
         }
-
 
         playerRoles.OnValueChanged += valueChanged;
 
@@ -79,9 +76,6 @@ public class Player : NetworkBehaviour
         //if(IsOwner && IsClient)
         //{
             // Update UI code
-            //! To do
-            //! Transfer from line 69 to 82 in ClientUI.cs and see what it does.
-            //! If it doesn't work then put it in UpdateRoleValue function
 
             Debug.Log($"Setup Role {newI}");
 
@@ -111,14 +105,12 @@ public class Player : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        //if (value != 0)
-        //    playerRoles.Value++;
-        //else
-        //    playerRoles.Value = value;
         playerRoles.Value = value;
     }
 
-    //! Calling from client to server
+    /// <summary>
+    /// Calling from client to server
+    /// </summary>
     [ServerRpc]
     public void CallingServerRpc()
     {
@@ -166,8 +158,6 @@ public class Player : NetworkBehaviour
 
         clientUI.TestGiveServerRpc(gameObject);
 
-        //! This is da wey
-        //if (!IsServer) return;
         CallingClientRpc();
 
         SpawnedClientRpc(go);
@@ -183,8 +173,6 @@ public class Player : NetworkBehaviour
     [ClientRpc]
     public void SpawnedClientRpc(NetworkObjectReference target)
     {
-        //obj.Value = target.NetworkObjectId;
-  
         go = target;
         clientUI = go.GetComponent<ClientUI>();
         roleName = clientUI.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
