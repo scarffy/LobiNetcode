@@ -20,6 +20,7 @@ public class NetworkController : NetworkBehaviour
     public Transform canvasParent;
     public Transform dummyParent;
     public GameObject clientUI;
+    public GameObject startUI;
 
     // Start is called before the first frame update
     void Start()

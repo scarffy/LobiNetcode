@@ -5,7 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Multiplayer Lobby - Utama.unity
     guid: 213f8956b93c54b6ca50ea8289683e83
+  - enabled: 1
+    path: Assets/Scenes/Multiplayer Lobby - Utama - Haizat.unity
+    guid: 2352c31c6ce9d4dd080ebf7d5269c506
   m_configObjects: {}

@@ -11,11 +11,13 @@ public class Player : NetworkBehaviour
     public NetworkVariable<int> playerRoles = new NetworkVariable<int>(0);
 
     [Space]
-    public GameObject go;
+    public GameObject go, startGo;
     public GameObject[] uiObjects;
 
     [Space]
     public ClientUI clientUI;
+    [Space]
+    public StartUIManager startUI;
     public NetworkObject netObject;
 
     /// <summary>
@@ -139,6 +141,13 @@ public class Player : NetworkBehaviour
             NetworkController.Instance.clientUI,
             NetworkController.Instance.canvasParent
             );
+
+        if (IsServer)
+        {
+            startGo = Instantiate(NetworkController.Instance.startUI
+          );
+        }
+      
 
         //go.name = "Local UI clone";
         if (IsLocalPlayer)
