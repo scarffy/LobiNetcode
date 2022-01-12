@@ -14,6 +14,8 @@ public class Player : NetworkBehaviour
     public GameObject go, startGo;
     public GameObject[] uiObjects;
 
+    public TextMeshProUGUI roleName;    // As name suggested
+
     [Space]
     public ClientUI clientUI;
     [Space]
@@ -69,7 +71,6 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public TextMeshProUGUI roleName;
 
     void valueChanged(int prevI,int newI)
     {
@@ -148,8 +149,6 @@ public class Player : NetworkBehaviour
           );
         }
       
-
-        //go.name = "Local UI clone";
         if (IsLocalPlayer)
             go.name = "Local UI";
         else
@@ -163,11 +162,8 @@ public class Player : NetworkBehaviour
         if(IsLocalPlayer)
             roleName.gameObject.name = "Local UI";
 
-        //! How do I call this from the host+server at start?
         clientUI.SetupServerRpc(OwnerClientId);
-        //! This work for local but not for remote
 
-        clientUI.TestServerRpc(go);
         clientUI.TestGiveServerRpc(gameObject);
 
         //! This is da wey

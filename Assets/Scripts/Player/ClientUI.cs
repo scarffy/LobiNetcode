@@ -15,6 +15,16 @@ public class ClientUI : NetworkBehaviour
     [Space]
     public Player player;   // To relay back to the player of their role //! Missing host
 
+
+    public NetworkVariable<ulong> playerId = new NetworkVariable<ulong>(); // Store playerId on server
+    public NetworkObject netObj;    // passing network object across client
+
+    //! Dont remember what these do
+    public NetworkObject networkObject; 
+    public NetworkObject networkObjected;
+
+    public Player[] players;    // Get and temporary store player objects
+
     public override void OnNetworkSpawn()
     {
         if (!IsServer)
@@ -24,15 +34,12 @@ public class ClientUI : NetworkBehaviour
 
         roleName.text = "None";
         clientName.text = $"Player {theValue}";
-
-        SetupClientRpc();
-
     }
 
-    public NetworkVariable<ulong> playerId = new NetworkVariable<ulong>();
 
     /// <summary>
     /// Calling from client to server
+    /// Storing playerId on the server
     /// </summary>
     [ServerRpc]
     public void SetupServerRpc(ulong value)
@@ -51,26 +58,6 @@ public class ClientUI : NetworkBehaviour
             player = networkObject.GetComponent<Player>();
             Debug.Log($"Host have found {value} value");
         }
-
-        //! Only accessible on server
-        //networkObject = NetworkManager.Singleton.ConnectedClients[theValue].PlayerObject;
-        //player = networkObject.GetComponent<Player>(); 
-    }
-
-    [ServerRpc]
-    public void TestServerRpc(NetworkObjectReference target)
-    {
-        
-        TryClientRpc(target);
-    }
-
-    [ClientRpc]
-    public void TryClientRpc(NetworkObjectReference target)
-    {
-        networkObjected = target;
-        //! This get this gameobject
-        //player = networkObjected.GetComponent<Player>();
-        Debug.Log("Cuba try test");
     }
 
     [ServerRpc]
@@ -79,7 +66,6 @@ public class ClientUI : NetworkBehaviour
         TestGiveClientRpc(target);
     }
 
-    public NetworkObject netObj;
     [ClientRpc]
     public void TestGiveClientRpc(NetworkObjectReference target)
     {
@@ -88,8 +74,6 @@ public class ClientUI : NetworkBehaviour
         player = netObj.GetComponent<Player>();
     }
 
-    public NetworkObject networkObject;
-    public  NetworkObject networkObjected;
     /// <summary>
     /// Calling from server to client
     /// </summary>
@@ -99,29 +83,15 @@ public class ClientUI : NetworkBehaviour
         clientName.text = $"Player {value}";
         theValue = value;
 
-        //gameObject.name = $"Client UI {value}";
-
         //! Can't find object this way. No idea why
          if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(value, out networkObjected))
          {
-            
             //! This is missing in client thus not able to call rpc properly
             player = networkObjected.GetComponent<Player>();
             Debug.Log($"Client have found {value} value ..  {player.name} .. ");
          }
     }
 
-    /// <summary>
-    /// Calling from server to client
-    /// 
-    /// </summary>
-    [ClientRpc]
-    public void SetupClientRpc()
-    {
-
-    }
-
-    public Player[] players;
     /// <summary>
     /// Calling from server to client.
     /// This is called from dropdown menu
@@ -130,18 +100,15 @@ public class ClientUI : NetworkBehaviour
     [ClientRpc]
     public void SetupRoleClientRpc(int value)
     {
-        //! Only server can call this
-        //! This function only work will existing player. Not player who join later
         if (player != null)
             player.UpdateRoleValue(value);
         else
         {
-           
-            players = GameObject.FindObjectsOfType<Player>();
+            players = FindObjectsOfType<Player>();
 
             for (int i = 0; i < players.Length; i++)
             {
-                Debug.Log($"Searching netId {players[i].NetworkObject.NetworkObjectId} ,{playerId.Value}");
+                Debug.Log($"Searching netId {players[i].NetworkObject.OwnerClientId} ,{playerId.Value}");
                 if (players[i].OwnerClientId == playerId.Value)
                 {
                     player = players[i];
@@ -149,32 +116,16 @@ public class ClientUI : NetworkBehaviour
                     netObj = player.GetComponent<Player>().NetworkObject;
                    
                     player.clientUI = this;
-                    player.netObject = this.GetComponent<NetworkObject>();
+                    player.netObject = GetComponent<NetworkObject>();
                     player.roleName = roleName;
                    
                     player.UpdateRoleValue(value);
                     return;
                 }
             }
+            
             //! Find the player with same id
             Debug.Log("player is null");
         }
-
-        //! Later player can't receive value
-        //switch (value)
-        //{
-        //    case 0:
-        //        roleName.text = "None";
-        //        break;
-        //    case 1:
-        //        roleName.text = "Trainer";             
-        //        break;
-        //    case 2:
-        //        roleName.text = "Trainee";
-        //        break;
-        //    case 3:
-        //        roleName.text = "Observer";
-        //        break;
-        //}
     }
 }
